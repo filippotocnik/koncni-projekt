@@ -2,6 +2,8 @@
 import os
 import jinja2
 import webapp2
+import hashlib
+from models import User
 
 
 template_dir = os.path.join(os.path.dirname(__file__), "templates")
@@ -33,6 +35,21 @@ class MainHandler(BaseHandler):
 class LoginHandler(BaseHandler):
     def get(self):
         return self.render_template("login.html")
+
+    def post(self):
+        # pull info from input
+        first_name = self.request.get("first_name")
+        last_name = self.request.get("last_name")
+        email = self.request.get("email")
+        password = self.request.get("password")
+        repeat_password = self.request.get("repeat_password")
+
+
+        if password == repeat_password:
+            # checking if passwords match
+            user = User(first_name=first_name, last_name=last_name, email=email, password=str(hashlib.sha512(password)))
+            user.put()
+
 
 app = webapp2.WSGIApplication([
     webapp2.Route('/', MainHandler),

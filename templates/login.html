@@ -6,22 +6,26 @@
     
     <h1>Please login into Bmail</h1>
         
-    <form method="post" action="">
+    <form method="post" action="/login">
         <p>
             <b>First name: </b>
-            <input name="first_name" type="text" required>
+            <input name="first_name" placeholder="Enter your name" type="text" required>
         </p>
         <p>
             <b>Last name: </b>
-            <input name="last_name" type="text" required>
+            <input name="last_name" placeholder="Enter your last name" type="text" required>
         </p>
         <p>
             <b>Email: </b>
-            <input name="email" type="email" required>
+            <input name="email" placeholder="Enter your email" type="email" required>
         </p>
         <p>
             <b>Password: </b>
-            <input name="password" type="password" required>
+            <input name="password" placeholder="Enter your password" type="password" required>
+        </p>
+        <p>
+            <b>Repeat password: </b>
+            <input name="repeat_password" placeholder="Repeat your password" type="password" required>
         </p>
         <button type="submit">Login</button>
     </form>
