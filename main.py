@@ -3,6 +3,7 @@ import os
 import jinja2
 import webapp2
 import hashlib
+import cgi
 from models import User
 
 
@@ -41,17 +42,27 @@ class LoginHandler(BaseHandler):
         first_name = self.request.get("first_name")
         last_name = self.request.get("last_name")
         email = self.request.get("email")
-        password = self.request.get("password")
-        repeat_password = self.request.get("repeat_password")
+        password = str(hashlib.sha512(self.request.get("password")))
+        repeat_password = str(hashlib.sha512(self.request.get("repeat_password")))
+
+        first_name = cgi.escape(first_name)
+        last_name = cgi.escape(last_name)
+        email = cgi.escape(email)
+        password = cgi.escape(password)
+        repeat_password = cgi.escape(repeat_password)
 
 
         if password == repeat_password:
             # checking if passwords match
-            user = User(first_name=first_name, last_name=last_name, email=email, password=str(hashlib.sha512(password)))
+            user = User(first_name=first_name, last_name=last_name, email=email, password=password)
             user.put()
 
+class HomeHandler(BaseHandler):
+    def get(self):
+        return self.render_template("home.html")
 
 app = webapp2.WSGIApplication([
     webapp2.Route('/', MainHandler),
     webapp2.Route('/login', LoginHandler),
+    webapp2.Route('/home', HomeHandler),
 ], debug=True)
