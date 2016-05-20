@@ -1,0 +1,30 @@
+{% extends "index.html" %}
+
+{% block title %}Bmail | Login{% endblock title %}
+
+{% block content %}
+    
+    <h1>Please login into Bmail</h1>
+        
+    <form method="post" action="">
+        <p>
+            <b>First name: </b>
+            <input name="first_name" type="text" required>
+        </p>
+        <p>
+            <b>Last name: </b>
+            <input name="last_name" type="text" required>
+        </p>
+        <p>
+            <b>Email: </b>
+            <input name="email" type="email" required>
+        </p>
+        <p>
+            <b>Password: </b>
+            <input name="password" type="password" required>
+        </p>
+        <button type="submit">Login</button>
+    </form>
+    
+{% endblock content %}
+    

@@ -26,11 +26,15 @@ class BaseHandler(webapp2.RequestHandler):
         template = jinja_env.get_template(view_filename)
         return self.response.out.write(template.render(params))
 
-
 class MainHandler(BaseHandler):
     def get(self):
-        return self.render_template("hello.html")
+        return self.render_template("index.html")
+
+class LoginHandler(BaseHandler):
+    def get(self):
+        return self.render_template("login.html")
 
 app = webapp2.WSGIApplication([
     webapp2.Route('/', MainHandler),
+    webapp2.Route('/login', LoginHandler),
 ], debug=True)
