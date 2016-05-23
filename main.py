@@ -8,7 +8,7 @@ import datetime
 import hmac
 import time
 from secret import secret
-from models import User, Message
+from models import User
 
 
 template_dir = os.path.join(os.path.dirname(__file__), "templates")
@@ -42,43 +42,47 @@ class BaseHandler(webapp2.RequestHandler):
         value = "{0}:{1}:{2}".format(user_id, sifra, expires_ts)
         self.response.set_cookie(key="uid", value=value, expires=expires)
 
-class MainHandler(BaseHandler):
-    def get(self):
-        return self.render_template("index.html")
-
 class RegistrationHandler(BaseHandler):
     def get(self):
-        return self.render_template("login.html")
+        return self.render_template("register.html")
 
     def post(self):
         # pull info from input
         first_name = self.request.get("first_name")
         last_name = self.request.get("last_name")
         email = self.request.get("email")
-        password = str(hashlib.sha512(self.request.get("password")))
-        repeat_password = str(hashlib.sha512(self.request.get("repeat_password")))
+        originalno_geslo = self.request.get("password")
+        repeat_password = self.request.get("repeat_password")
 
         first_name = cgi.escape(first_name)
         last_name = cgi.escape(last_name)
         email = cgi.escape(email)
-        password = cgi.escape(password)
+        originalno_geslo = cgi.escape(originalno_geslo)
         repeat_password = cgi.escape(repeat_password)
 
-        if password == repeat_password:
+        if originalno_geslo == repeat_password:
             # checking if passwords match
-            user = User(first_name=first_name, last_name=last_name, email=email, password=password)
-            user.put()
+            User.ustvari(first_name, last_name, email, originalno_geslo)
 
-class InboxHandler(BaseHandler):
+
+
+class LoginHandler(BaseHandler):
     def get(self):
-        if #kako preveriti password
-
-
-        return self.render_template("inbox.html")
+        return self.render_template("login.html")
 
     def post(self):
+        loged_in_user = User.gql("WHERE email='%s'" % self.request.get("email")).get()
+
+        if User.preveri_geslo(self.request.get("password"), loged_in_user):
+            self.create_cookie(user=loged_in_user)
+            return self.render_template("home.html")
+        else:
+            self.write("NO!")
 
 
+
+
+"""
 class NewMessageHandler(BaseHandler):
     def get(self):
         return self.render_template("new_message.html")
@@ -86,17 +90,21 @@ class NewMessageHandler(BaseHandler):
     def post(self):
         receiver = self.request.get("message_to")
         subject = self.request.get("subject")
-        message = self.request.get("memessage")
+        message = self.request.get("message")
 
-        message = Message(subject=subject, content=message, sender_id= , reciver_id= )
+        message = Message(subject=subject, content=message, sender_id= , reciver_id=receiver.key.id())
 
+class WeatherHandler(BaseHandler):
+    def get(self):
+        return self.render_template("weather.html")
+"""
 
 
 app = webapp2.WSGIApplication([
-    webapp2.Route('/', MainHandler),
-    webapp2.Route('/login', RegistrationHandler),
-    webapp2.Route('/inbox', InboxHandler),
-    webapp2.Route('/newmessage', NewMessageHandler),
+    webapp2.Route('/', RegistrationHandler),
+    webapp2.Route('/login', LoginHandler),
+    #webapp2.Route('/weather', WeatherHandler),
+    #webapp2.Route('/inbox', InboxHandler),
 ], debug=True)
 
 

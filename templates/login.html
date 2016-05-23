@@ -2,35 +2,11 @@
 
 {% block title %}Bmail | Login{% endblock title %}
 
-{% block nav1 %}Registration{% endblock nav1 %}
-
 {% block content %}
-    
-    <h1>Please login into Bmail</h1>
-        
-    <form method="post" action="/inbox">
-        <p>
-            <b>First name: </b>
-            <input name="first_name" placeholder="Enter your name" type="text" required>
-        </p>
-        <p>
-            <b>Last name: </b>
-            <input name="last_name" placeholder="Enter your last name" type="text" required>
-        </p>
-        <p>
-            <b>Email: </b>
-            <input name="email" placeholder="Enter your email" type="email" required>
-        </p>
-        <p>
-            <b>Password: </b>
-            <input name="password" placeholder="Enter your password" type="password" required>
-        </p>
-        <p>
-            <b>Repeat password: </b>
-            <input name="repeat_password" placeholder="Repeat your password" type="password" required>
-        </p>
-        <button type="submit">Login</button>
+    <h1>Please Login!</h1>
+    <form method="post">
+        <p>Email: <input name="email" type="email" /><p/>
+        <p>Password: <input name="password" type="password" /></p>
+        <p><button type="submit">Login!</button></p>
     </form>
-    
 {% endblock content %}
-    
