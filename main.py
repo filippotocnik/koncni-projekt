@@ -4,6 +4,10 @@ import jinja2
 import webapp2
 import hashlib
 import cgi
+import datetime
+import hmac
+import time
+from secret import secret
 from models import User, Message
 
 
@@ -29,11 +33,20 @@ class BaseHandler(webapp2.RequestHandler):
         template = jinja_env.get_template(view_filename)
         return self.response.out.write(template.render(params))
 
+    def create_cookie(self, user):
+        # created cookie
+        user_id = user.key.id()
+        expires = datetime.datetime.utcnow() + datetime.timedelta(days=10)
+        expires_ts = int(time.mktime(expires.timetuple()))
+        sifra = hmac.new(str(user_id), str(secret) + str(expires_ts), hashlib.sha1).hexdigest()
+        value = "{0}:{1}:{2}".format(user_id, sifra, expires_ts)
+        self.response.set_cookie(key="uid", value=value, expires=expires)
+
 class MainHandler(BaseHandler):
     def get(self):
         return self.render_template("index.html")
 
-class LoginHandler(BaseHandler):
+class RegistrationHandler(BaseHandler):
     def get(self):
         return self.render_template("login.html")
 
@@ -57,14 +70,17 @@ class LoginHandler(BaseHandler):
             user = User(first_name=first_name, last_name=last_name, email=email, password=password)
             user.put()
 
-class HomeHandler(BaseHandler):
+class InboxHandler(BaseHandler):
     def get(self):
-        return self.render_template("home.html")
+        return self.render_template("inbox.html")
+
+    def post(self):
+
 
 app = webapp2.WSGIApplication([
     webapp2.Route('/', MainHandler),
-    webapp2.Route('/login', LoginHandler),
-    webapp2.Route('/home', HomeHandler),
+    webapp2.Route('/login', RegistrationHandler),
+    webapp2.Route('/inbox', InboxHandler),
 ], debug=True)
 
 
