@@ -4,7 +4,7 @@ import jinja2
 import webapp2
 import hashlib
 import cgi
-from models import User
+from models import User, Message
 
 
 template_dir = os.path.join(os.path.dirname(__file__), "templates")
@@ -66,3 +66,10 @@ app = webapp2.WSGIApplication([
     webapp2.Route('/login', LoginHandler),
     webapp2.Route('/home', HomeHandler),
 ], debug=True)
+
+
+""""
+Vprasanja:
+- kaj je @classmethod v modelih?
+
+"""
