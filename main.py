@@ -64,7 +64,6 @@ class RegistrationHandler(BaseHandler):
         password = cgi.escape(password)
         repeat_password = cgi.escape(repeat_password)
 
-
         if password == repeat_password:
             # checking if passwords match
             user = User(first_name=first_name, last_name=last_name, email=email, password=password)
@@ -72,20 +71,40 @@ class RegistrationHandler(BaseHandler):
 
 class InboxHandler(BaseHandler):
     def get(self):
+        if #kako preveriti password
+
+
         return self.render_template("inbox.html")
 
     def post(self):
+
+
+class NewMessageHandler(BaseHandler):
+    def get(self):
+        return self.render_template("new_message.html")
+
+    def post(self):
+        receiver = self.request.get("message_to")
+        subject = self.request.get("subject")
+        message = self.request.get("memessage")
+
+        message = Message(subject=subject, content=message, sender_id= , reciver_id= )
+
 
 
 app = webapp2.WSGIApplication([
     webapp2.Route('/', MainHandler),
     webapp2.Route('/login', RegistrationHandler),
     webapp2.Route('/inbox', InboxHandler),
+    webapp2.Route('/newmessage', NewMessageHandler),
 ], debug=True)
 
 
 """"
 Vprasanja:
 - kaj je @classmethod v modelih?
+- kako 'gledas' v bazo?
+- kako jemljes iz baze?
+- preverjanje gesla?
 
 """
