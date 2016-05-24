@@ -8,7 +8,7 @@ import datetime
 import hmac
 import time
 from secret import secret
-from models import User
+from models import User, Message
 
 
 template_dir = os.path.join(os.path.dirname(__file__), "templates")
@@ -79,32 +79,40 @@ class LoginHandler(BaseHandler):
         else:
             self.write("NO!")
 
-
-
-
-"""
 class NewMessageHandler(BaseHandler):
     def get(self):
         return self.render_template("new_message.html")
 
     def post(self):
-        receiver = self.request.get("message_to")
         subject = self.request.get("subject")
-        message = self.request.get("message")
+        content = self.request.get("content")
+        message_to = self.request.get("message_to")
+        subject = cgi.escape(subject)
+        content = cgi.escape(content)
 
-        message = Message(subject=subject, content=message, sender_id= , reciver_id=receiver.key.id())
+        cookie_value = self.request.cookies.get("uid")
+        sender_id, _, _ = cookie_value.split(":")
+        sender_id = int(sender_id)
 
-class WeatherHandler(BaseHandler):
+        receiver = User.gql("WHERE email='%s'" % message_to).get()
+        receiver_id = receiver.key.id()
+        sporocilo = Message(subject=subject, content=content, receiver_email=message_to, sender_id=sender_id, receiver_id=receiver_id)
+        sporocilo.put()
+
+        self.redirect("/show_message")
+
+class ShowMessageHandler(BaseHandler):
     def get(self):
-        return self.render_template("weather.html")
-"""
+        return self.render_template("show_message.html")
+
+
 
 
 app = webapp2.WSGIApplication([
     webapp2.Route('/', RegistrationHandler),
     webapp2.Route('/login', LoginHandler),
-    #webapp2.Route('/weather', WeatherHandler),
-    #webapp2.Route('/inbox', InboxHandler),
+    webapp2.Route('/new_message', NewMessageHandler),
+    webapp2.Route('/show_message', ShowMessageHandler),
 ], debug=True)
 
 
