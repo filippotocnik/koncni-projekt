@@ -37,7 +37,7 @@ class Message(ndb.Model):
     subject = ndb.StringProperty()
     content = ndb.TextProperty()
     receiver_email = ndb.StringProperty()
-    sender_id = ndb.IntegerProperty()
+    user_id = ndb.IntegerProperty()
     receiver_id = ndb.IntegerProperty()
     created = ndb.DateTimeProperty(auto_now_add=True)
 

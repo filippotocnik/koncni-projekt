@@ -63,7 +63,7 @@ class RegistrationHandler(BaseHandler):
         if originalno_geslo == repeat_password:
             # checking if passwords match
             User.ustvari(first_name, last_name, email, originalno_geslo)
-
+        return self.render_template("login.html")
 
 
 class LoginHandler(BaseHandler):
@@ -91,20 +91,62 @@ class NewMessageHandler(BaseHandler):
         content = cgi.escape(content)
 
         cookie_value = self.request.cookies.get("uid")
-        sender_id, _, _ = cookie_value.split(":")
-        sender_id = int(sender_id)
+        user_id, _, _ = cookie_value.split(":")
+        user_id = int(user_id)
 
-        receiver = User.gql("WHERE email='%s'" % message_to).get()
+        #receiver = User.gql("WHERE email='%s'" % message_to).get()
+        receiver = User.gql("WHERE email='" + message_to + "'").get()
         receiver_id = receiver.key.id()
-        sporocilo = Message(subject=subject, content=content, receiver_email=message_to, sender_id=sender_id, receiver_id=receiver_id)
-        sporocilo.put()
+        message = Message(subject=subject, content=content, receiver_email=message_to, user_id=user_id, receiver_id=receiver_id)
+        message.put()
 
         self.redirect("/show_message")
 
 class ShowMessageHandler(BaseHandler):
     def get(self):
-        return self.render_template("show_message.html")
 
+        cookie_value = self.request.cookies.get("uid")
+        user_id, _, _ = cookie_value.split(":")
+        user_id = int(user_id)
+        user = User.get_by_id(int(user_id))
+        user_email = user.email
+        inbox = Message.gql("WHERE receiver_id=" + str(user_id)).order(-Message.nastanek).fetch()
+
+        view_vars = {
+            "inbox": inbox,
+            "user_email": user_email,
+        }
+
+        return self.render_template("show_message.html", view_vars)
+
+class EachMessageHandler(BaseHandler):
+    def get(self, message_id):
+        message = Message.get_by_id(int(message_id))
+
+        view_vars = {
+            "message": message,
+        }
+
+        return self.render_template("each_message.html", view_vars)
+
+class EditMessageHandler(BaseHandler):
+    def get(self, message_id):
+        message = Message.get_by_id(int(message_id))
+
+        view_vars = {
+            "message": message,
+        }
+
+        return self.render_template("edit_message.html", view_vars)
+
+    def post(self, message_id):
+        message = Message.get_by_id(int(message_id))
+        #message.ime= self.request.get("ime")
+        message.email = self.request.get("email")
+        message.content = self.request.get("sporocilo")
+        message.put()
+
+        self.redirect("/message/" + message_id)
 
 
 
@@ -113,6 +155,7 @@ app = webapp2.WSGIApplication([
     webapp2.Route('/login', LoginHandler),
     webapp2.Route('/new_message', NewMessageHandler),
     webapp2.Route('/show_message', ShowMessageHandler),
+    webapp2.Route('/each_message', EachMessageHandler),
 ], debug=True)
 
 
